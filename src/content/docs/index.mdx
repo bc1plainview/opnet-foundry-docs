@@ -1,0 +1,67 @@
+---
+title: OPNet Foundry
+description: Build, test, and deploy OPNet smart contracts.
+template: splash
+hero:
+  tagline: The complete development toolchain for OPNet smart contracts on Bitcoin.
+  actions:
+    - text: Get Started
+      link: /getting-started/installation/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/btc-vision/opnet-foundry
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<div class="install-command">curl -L https://foundry.opnet.org | bash</div>
+
+<CardGrid>
+  <Card title="op-forge" icon="setting">
+    Build, test, and deploy AssemblyScript contracts targeting the OPNet virtual machine.
+  </Card>
+  <Card title="op-cast" icon="rocket">
+    Interact with deployed contracts, send transactions, and query on-chain state. Coming soon.
+  </Card>
+  <Card title="op-anvil" icon="laptop">
+    Run a local OPNet node for development and testing with instant block confirmation. Coming soon.
+  </Card>
+  <Card title="op-chisel" icon="pencil">
+    REPL for rapid contract prototyping. Write and execute contract code interactively. Coming soon.
+  </Card>
+</CardGrid>
+
+---
+
+## Quick Start
+
+Initialize a new project, build it, test it, and deploy it -- all from the command line.
+
+```bash
+# Scaffold a new project
+op-forge init my-contract
+
+# Build
+cd my-contract
+pnpm install
+op-forge build
+
+# Test
+op-forge test
+
+# Deploy to testnet
+op-forge create MyContract --network testnet --private-key <WIF>
+```
+
+## Why Foundry?
+
+OPNet Foundry is designed for developers building smart contracts on Bitcoin via the OPNet protocol. It handles the full lifecycle from project scaffolding to deployment.
+
+**Familiar patterns.** If you have used Foundry for Solidity (forge, cast, anvil, chisel), the command structure will feel familiar. OPNet Foundry adapts the same workflow for AssemblyScript contracts targeting Bitcoin.
+
+**One toolchain.** No need to stitch together separate compilers, test runners, and deployment scripts. op-forge handles compilation, testing, gas snapshots, artifact inspection, and deployment in a single CLI.
+
+**Bitcoin-native.** Contracts compile to WASM, deploy via Bitcoin transactions, and interact through the OPNet protocol. Fee rates, UTXO management, and simulation are built in.

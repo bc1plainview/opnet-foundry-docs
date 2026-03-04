@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" fill="none">
+  <rect x="0" y="0" width="40" height="40" rx="6" fill="#f59e0b"/>
+  <path d="M12 32h16v2.5H12z" fill="#0a0a0f"/>
+  <path d="M14 16l6-10 6 10H14z" fill="#0a0a0f"/>
+  <path d="M17 16h6v16h-6z" fill="#0a0a0f" opacity="0.85"/>
+  <path d="M13 28h14v2H13z" fill="#0a0a0f" opacity="0.7"/>
+  <text x="50" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#e4e4e7">Foundry</text>
+</svg>
