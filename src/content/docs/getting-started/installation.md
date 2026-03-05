@@ -13,7 +13,7 @@ description: Install OPNet Foundry and get op-forge running on your system.
 The quickest way to install OPNet Foundry:
 
 ```bash
-curl -L https://foundry.opnet.org | bash
+curl -L https://raw.githubusercontent.com/bc1plainview/opnet-foundry-docs/main/install.sh | bash
 ```
 
 This installs `op-forge` and updates your PATH. Restart your terminal after installation.
@@ -93,7 +93,7 @@ pnpm add -g @btc-vision/foundry@latest
 Or re-run the install script:
 
 ```bash
-curl -L https://foundry.opnet.org | bash
+curl -L https://raw.githubusercontent.com/bc1plainview/opnet-foundry-docs/main/install.sh | bash
 ```
 
 ## Next Steps
