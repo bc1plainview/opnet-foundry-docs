@@ -35,7 +35,7 @@ npm install -g @btc-vision/foundry
 Clone the repository and build locally:
 
 ```bash
-git clone https://github.com/btc-vision/opnet-foundry.git
+git clone https://github.com/bc1plainview/opnet-foundry-docs.git
 cd opnet-foundry
 pnpm install
 pnpm build

@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
-  site: 'https://foundry.opnet.org',
+  site: 'https://opnet-foundry.vercel.app',
   legacy: {
     collections: true,
   },
@@ -16,7 +16,7 @@ export default defineConfig({
         replacesTitle: true,
       },
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/btc-vision/opnet-foundry' },
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/bc1plainview/opnet-foundry-docs' },
       ],
       head: [
         {
