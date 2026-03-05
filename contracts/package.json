@@ -1,0 +1,22 @@
+{
+    "name": "blockmaps-contract",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "build": "asc src/index.ts --config asconfig.json --target blockmaps",
+        "lint": "eslint src/",
+        "clean": "rm -rf build/*"
+    },
+    "dependencies": {
+        "@btc-vision/as-bignum": "0.1.2",
+        "@btc-vision/btc-runtime": "rc",
+        "@noble/hashes": "2.0.1"
+    },
+    "devDependencies": {
+        "@btc-vision/assemblyscript": "^0.29.2",
+        "@btc-vision/opnet-transform": "latest",
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.0.0",
+        "typescript-eslint": "^8.56.0"
+    }
+}

@@ -1,0 +1,48 @@
+{
+    "name": "blockmaps-frontend",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "typecheck": "tsc --noEmit",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@btc-vision/bip32": "latest",
+        "@btc-vision/bitcoin": "rc",
+        "@btc-vision/ecpair": "latest",
+        "@btc-vision/transaction": "rc",
+        "@btc-vision/walletconnect": "latest",
+        "opnet": "rc",
+        "react": "latest",
+        "react-dom": "latest",
+        "react-router-dom": "^6.26.2"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.2",
+        "@playwright/test": "^1.58.2",
+        "@types/node": "latest",
+        "@types/react": "latest",
+        "@types/react-dom": "latest",
+        "@typescript-eslint/eslint-plugin": "latest",
+        "@typescript-eslint/parser": "latest",
+        "@vitejs/plugin-react": "latest",
+        "crypto-browserify": "latest",
+        "eslint": "^9.39.2",
+        "eslint-plugin-react": "latest",
+        "eslint-plugin-react-hooks": "latest",
+        "eslint-plugin-react-refresh": "latest",
+        "stream-browserify": "latest",
+        "typescript": "latest",
+        "typescript-eslint": "^8.56.0",
+        "vite": "latest",
+        "vite-plugin-eslint2": "latest",
+        "vite-plugin-node-polyfills": "latest"
+    },
+    "overrides": {
+        "@noble/hashes": "2.0.1"
+    }
+}

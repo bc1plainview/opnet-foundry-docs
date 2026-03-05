@@ -1,0 +1,119 @@
+{
+    "functions": [
+        {
+            "name": "mint",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "blockHeight",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "blockHash16",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "txCount",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "difficulty",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "tokenId",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "isMinted",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "blockHeight",
+                    "type": "UINT64"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "minted",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "getBlockData",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "blockHeight",
+                    "type": "UINT64"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "hash16",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "txCount",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "difficulty",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "owner",
+                    "type": "ADDRESS"
+                }
+            ]
+        },
+        {
+            "name": "totalMinted",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "total",
+                    "type": "UINT256"
+                }
+            ]
+        }
+    ],
+    "events": [
+        {
+            "name": "BlockMinted",
+            "values": [
+                {
+                    "name": "blockHeight",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "minter",
+                    "type": "ADDRESS"
+                }
+            ],
+            "type": "Event"
+        }
+    ]
+}

@@ -1,0 +1,78 @@
+/* Horizon gradient animation */
+@keyframes horizonShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* Glow pulse */
+@keyframes glowPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Status dot pulse */
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+/* Shimmer for skeleton loaders */
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Scroll reveal */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Neon glow for text */
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow:
+            0 0 10px var(--accent-50),
+            0 0 20px var(--accent-20);
+    }
+    50% {
+        text-shadow:
+            0 0 20px var(--accent),
+            0 0 40px var(--accent-50),
+            0 0 60px var(--accent-20);
+    }
+}
+
+/* Reveal classes */
+.reveal-hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 600ms ease, transform 600ms ease;
+}
+
+.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Apply stagger delays */
+.reveal-delay-1 { transition-delay: 100ms; }
+.reveal-delay-2 { transition-delay: 200ms; }
+.reveal-delay-3 { transition-delay: 300ms; }
+.reveal-delay-4 { transition-delay: 400ms; }
+
+/* Fade in on mount */
+.fade-in {
+    animation: fadeInUp 400ms ease forwards;
+}
+
+/* Neon heading glow */
+.neon-glow {
+    animation: textGlow 3s ease-in-out infinite;
+}
