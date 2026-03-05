@@ -138,15 +138,16 @@ export function useMint(): UseMintReturn {
 
             setMintStatus('pending');
 
-            // Send with null signers — wallet handles signing on frontend
-            const sendFn = sim.sendTransaction as (params: {
+            // Call sendTransaction as a method on sim — do NOT detach it,
+            // or `this` loses context and #provider becomes undefined
+            const simAny = sim as { sendTransaction: (params: {
                 signer: null;
                 mldsaSigner: null;
                 refundTo: string;
                 network: typeof NETWORK;
-            }) => Promise<Record<string, unknown>>;
+            }) => Promise<Record<string, unknown>> };
 
-            const receipt = await sendFn({
+            const receipt = await simAny.sendTransaction({
                 signer: null,
                 mldsaSigner: null,
                 refundTo: walletAddress,
