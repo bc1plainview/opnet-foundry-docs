@@ -3,8 +3,6 @@ title: op-forge snapshot
 description: Run tests with gas tracking and write a .gas-snapshot file.
 ---
 
-# op-forge snapshot
-
 Run all tests with gas tracking enabled and write the results to a `.gas-snapshot` file. Use `--check` to compare against a previous snapshot and detect gas regressions.
 
 ## Usage

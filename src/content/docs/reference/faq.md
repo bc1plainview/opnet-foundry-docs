@@ -3,8 +3,6 @@ title: FAQ
 description: Frequently asked questions about OPNet Foundry.
 ---
 
-# FAQ
-
 ## General
 
 ### What is OPNet Foundry?

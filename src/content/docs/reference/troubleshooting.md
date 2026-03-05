@@ -3,8 +3,6 @@ title: Troubleshooting
 description: Common issues and solutions for OPNet Foundry.
 ---
 
-# Troubleshooting
-
 ## Build Errors
 
 ### "Cannot find module @btc-vision/btc-runtime/runtime"

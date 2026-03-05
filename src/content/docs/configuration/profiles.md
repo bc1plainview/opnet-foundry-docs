@@ -3,8 +3,6 @@ title: Profiles
 description: Use configuration profiles to manage different environments.
 ---
 
-# Profiles
-
 Profiles let you define different configurations for different environments -- development, CI, production, etc. This mirrors Foundry's profile system.
 
 ## How Profiles Work

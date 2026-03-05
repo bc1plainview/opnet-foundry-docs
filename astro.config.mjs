@@ -61,6 +61,8 @@ export default defineConfig({
           items: [
             { label: 'Installation', slug: 'getting-started/installation' },
             { label: 'Your First Project', slug: 'getting-started/first-project' },
+            { label: 'Contract Development', slug: 'getting-started/contract-development' },
+            { label: 'Writing Tests', slug: 'getting-started/writing-tests' },
           ],
         },
         {
@@ -88,18 +90,22 @@ export default defineConfig({
           label: 'op-cast',
           items: [
             { label: 'Overview', slug: 'cast' },
+            { label: 'Commands', slug: 'cast/commands' },
           ],
         },
         {
           label: 'op-anvil',
           items: [
             { label: 'Overview', slug: 'anvil' },
+            { label: 'Configuration', slug: 'anvil/configuration' },
+            { label: 'Usage Guide', slug: 'anvil/usage' },
           ],
         },
         {
           label: 'op-chisel',
           items: [
             { label: 'Overview', slug: 'chisel' },
+            { label: 'Commands', slug: 'chisel/commands' },
           ],
         },
         {

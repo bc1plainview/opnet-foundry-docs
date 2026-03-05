@@ -3,8 +3,6 @@ title: opnet.toml Reference
 description: Complete reference for the opnet.toml configuration file.
 ---
 
-# opnet.toml Reference
-
 `opnet.toml` is the configuration file for OPNet Foundry projects, equivalent to Foundry's `foundry.toml`. It controls compilation, testing, deployment, and formatting settings.
 
 ## File Location
