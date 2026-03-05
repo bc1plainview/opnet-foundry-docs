@@ -117,18 +117,33 @@ export function useMint(): UseMintReturn {
 
             const blockHash16 = hashToBlockHash16(blockHash);
 
+            console.log('[BlockMaps] mint params:', {
+                blockHeight: typeof blockHeight, blockHash16: typeof blockHash16,
+                txCount: typeof txCount, timestamp: typeof timestamp,
+                difficulty: typeof difficulty, blockSize: typeof blockSize,
+                blockWeight: typeof blockWeight, totalFees: typeof totalFees,
+                blockReward: typeof blockReward,
+            });
+
             // Simulate first — always before sendTransaction
-            const sim = await contract.mint(
-                blockHeight,
-                blockHash16,
-                txCount,
-                timestamp,
-                difficulty,
-                blockSize,
-                blockWeight,
-                totalFees,
-                blockReward,
-            );
+            let sim: Record<string, unknown>;
+            try {
+                sim = await contract.mint(
+                    blockHeight,
+                    blockHash16,
+                    txCount,
+                    timestamp,
+                    difficulty,
+                    blockSize,
+                    blockWeight,
+                    totalFees,
+                    blockReward,
+                );
+            } catch (simErr) {
+                setMintError(`Simulation error: ${simErr instanceof Error ? simErr.message : String(simErr)}`);
+                setMintStatus('error');
+                return;
+            }
 
             if ('error' in sim) {
                 setMintError(`Simulation failed: ${String(sim.error)}`);
@@ -136,6 +151,7 @@ export function useMint(): UseMintReturn {
                 return;
             }
 
+            console.log('[BlockMaps] simulation passed, sending tx...');
             setMintStatus('pending');
 
             // Call sendTransaction as a method on sim — do NOT detach it,
@@ -145,6 +161,7 @@ export function useMint(): UseMintReturn {
                 mldsaSigner: null;
                 refundTo: string;
                 network: typeof NETWORK;
+                maximumAllowedSatToSpend: bigint;
             }) => Promise<Record<string, unknown>> };
 
             const receipt = await simAny.sendTransaction({
@@ -152,6 +169,7 @@ export function useMint(): UseMintReturn {
                 mldsaSigner: null,
                 refundTo: walletAddress,
                 network: NETWORK,
+                maximumAllowedSatToSpend: 0n,
             });
 
             if (receipt && typeof receipt === 'object' && 'txid' in receipt) {
