@@ -66,7 +66,7 @@ export function SVGPreview({ blockHeight, hashHex, txCount = 256, size = 280, cl
                         y={y}
                         width={cellSize}
                         height={cellSize}
-                        rx={1}
+                        rx={0}
                         fill={color}
                         opacity={opacity}
                     />,
@@ -79,7 +79,7 @@ export function SVGPreview({ blockHeight, hashHex, txCount = 256, size = 280, cl
                         y={y}
                         width={cellSize}
                         height={cellSize}
-                        rx={1}
+                        rx={0}
                         fill="#ffffff"
                         opacity="0.025"
                     />,
@@ -94,11 +94,11 @@ export function SVGPreview({ blockHeight, hashHex, txCount = 256, size = 280, cl
             width={size}
             height={size}
             className={className}
-            style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+            style={{ display: 'block', width: '100%', height: 'auto', imageRendering: 'pixelated' }}
             aria-label={`BlockMap #${blockHeight.toString()}`}
             role="img"
         >
-            <rect width={viewBox} height={viewBox} fill="#050510" rx="4" />
+            <rect width={viewBox} height={viewBox} fill="#050510" rx="0" />
             <g>{cells}</g>
         </svg>
     );

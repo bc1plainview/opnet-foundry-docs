@@ -52,7 +52,7 @@ function StatItem({ label, value, mono = false, breakAll = false }: StatItemProp
             <div
                 className="block-stat-value"
                 style={{
-                    fontFamily: mono ? "'Space Mono', monospace" : undefined,
+                    fontFamily: mono ? "'Press Start 2P', cursive" : undefined,
                     wordBreak: breakAll ? 'break-all' : undefined,
                 }}
             >

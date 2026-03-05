@@ -90,7 +90,7 @@ export function SankeyDiagram({ tx }: SankeyDiagramProps): React.ReactElement {
                             textAnchor="end"
                             fontSize={9}
                             fill="var(--text-secondary)"
-                            fontFamily="'Space Mono', monospace"
+                            fontFamily="'Press Start 2P', cursive"
                         >
                             {rect.label}
                         </text>
@@ -101,7 +101,7 @@ export function SankeyDiagram({ tx }: SankeyDiagramProps): React.ReactElement {
                             textAnchor="end"
                             fontSize={8}
                             fill="var(--text-muted)"
-                            fontFamily="'Space Mono', monospace"
+                            fontFamily="'Press Start 2P', cursive"
                         >
                             {satDisplay(rect.value)}
                         </text>
@@ -127,7 +127,7 @@ export function SankeyDiagram({ tx }: SankeyDiagramProps): React.ReactElement {
                             textAnchor="start"
                             fontSize={9}
                             fill="var(--text-secondary)"
-                            fontFamily="'Space Mono', monospace"
+                            fontFamily="'Press Start 2P', cursive"
                         >
                             {rect.label}
                         </text>
@@ -138,7 +138,7 @@ export function SankeyDiagram({ tx }: SankeyDiagramProps): React.ReactElement {
                             textAnchor="start"
                             fontSize={8}
                             fill="var(--text-muted)"
-                            fontFamily="'Space Mono', monospace"
+                            fontFamily="'Press Start 2P', cursive"
                         >
                             {satDisplay(rect.value)}
                         </text>
@@ -154,7 +154,7 @@ export function SankeyDiagram({ tx }: SankeyDiagramProps): React.ReactElement {
                         fontSize={9}
                         fill="var(--red)"
                         opacity={0.7}
-                        fontFamily="'Space Mono', monospace"
+                        fontFamily="'Press Start 2P', cursive"
                     >
                         fee: {satDisplay(layout.fee)}
                     </text>
@@ -167,7 +167,7 @@ export function SankeyDiagram({ tx }: SankeyDiagramProps): React.ReactElement {
                     textAnchor="end"
                     fontSize={9}
                     fill="var(--text-muted)"
-                    fontFamily="'Space Mono', monospace"
+                    fontFamily="'Press Start 2P', cursive"
                 >
                     INPUTS
                 </text>
@@ -177,7 +177,7 @@ export function SankeyDiagram({ tx }: SankeyDiagramProps): React.ReactElement {
                     textAnchor="start"
                     fontSize={9}
                     fill="var(--text-muted)"
-                    fontFamily="'Space Mono', monospace"
+                    fontFamily="'Press Start 2P', cursive"
                 >
                     OUTPUTS
                 </text>

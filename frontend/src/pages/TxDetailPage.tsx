@@ -284,7 +284,7 @@ export function TxDetailPage(): React.ReactElement {
                 {loading && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                         {Array.from({ length: 8 }).map((_, i) => (
-                            <div key={i} className="skeleton" style={{ height: 48, borderRadius: 4 }} />
+                            <div key={i} className="skeleton" style={{ height: 48 }} />
                         ))}
                     </div>
                 )}

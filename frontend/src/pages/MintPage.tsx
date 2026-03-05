@@ -49,7 +49,7 @@ export function MintPage(): React.ReactElement {
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
                         <div className="stat-badge">
                             {loadingTotal || !hasLoaded ? (
-                                <span className="skeleton" style={{ display: 'inline-block', width: '60px', height: '14px', borderRadius: '3px' }} />
+                                <span className="skeleton" style={{ display: 'inline-block', width: '60px', height: '14px', borderRadius: 0 }} />
                             ) : (
                                 <strong data-numeric style={{ fontVariantNumeric: 'tabular-nums' }}>
                                     {totalMinted != null ? totalMinted.toLocaleString() : '—'}

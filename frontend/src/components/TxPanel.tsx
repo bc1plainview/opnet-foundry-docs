@@ -191,8 +191,8 @@ export function TxPanel({ txid, onClose }: TxPanelProps): React.ReactElement {
                                 cursor: 'pointer',
                                 padding: '4px 8px',
                                 fontSize: 11,
-                                fontFamily: "'Space Mono', monospace",
-                                transition: 'border-color 150ms ease, color 150ms ease',
+                                fontFamily: "'Press Start 2P', cursive",
+                                transition: 'border-color 80ms step-start, color 80ms step-start',
                             }}
                             aria-label="Close transaction panel"
                         >
@@ -206,7 +206,7 @@ export function TxPanel({ txid, onClose }: TxPanelProps): React.ReactElement {
                     {loading && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                             {Array.from({ length: 6 }).map((_, i) => (
-                                <div key={i} className="skeleton" style={{ height: 48, borderRadius: 4 }} />
+                                <div key={i} className="skeleton" style={{ height: 48 }} />
                             ))}
                         </div>
                     )}

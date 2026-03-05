@@ -87,10 +87,10 @@ export function DetailPage(): React.ReactElement {
             <div className="page">
                 <div className="container" style={{ maxWidth: '1100px' }}>
                     <div style={{ display: 'flex', gap: 'var(--spacing-2xl)', flexWrap: 'wrap' }}>
-                        <div className="skeleton" style={{ width: '400px', height: '400px', borderRadius: '12px', flexShrink: 0 }} />
+                        <div className="skeleton" style={{ width: '400px', height: '400px', borderRadius: 0, flexShrink: 0 }} />
                         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', minWidth: '200px' }}>
-                            <div className="skeleton" style={{ height: '32px', width: '70%', borderRadius: '4px' }} />
-                            <div className="skeleton" style={{ height: '200px', borderRadius: '8px' }} />
+                            <div className="skeleton" style={{ height: '32px', width: '70%', borderRadius: 0 }} />
+                            <div className="skeleton" style={{ height: '200px', borderRadius: 0 }} />
                         </div>
                     </div>
                 </div>
@@ -165,7 +165,7 @@ export function DetailPage(): React.ReactElement {
 
                     <div
                         style={{
-                            borderRadius: '12px',
+                            borderRadius: 0,
                             padding: '3px',
                             background: selectedCell !== null
                                 ? 'linear-gradient(135deg, var(--accent), var(--accent-b), var(--accent-c))'
@@ -257,7 +257,7 @@ export function DetailPage(): React.ReactElement {
 
                     {!enhancedBlock && (
                         <div style={{ flex: 2, minWidth: '300px' }}>
-                            <div className="skeleton" style={{ height: 200, borderRadius: 8 }} />
+                            <div className="skeleton" style={{ height: 200, borderRadius: 0 }} />
                         </div>
                     )}
                 </div>
