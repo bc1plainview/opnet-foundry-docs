@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { getContract } from 'opnet';
 import { useWalletConnect } from '@btc-vision/walletconnect';
 import { getProvider } from '../lib/provider.js';
@@ -63,33 +63,25 @@ interface UseTotalMintedReturn {
     fetchTotalMinted: () => Promise<bigint | null>;
 }
 
-/** Read-only contract instance (no sender needed for view calls) */
-function getReadContract(): BlockMapsContractMethods {
-    const provider = getProvider();
-    return getContract(
-        CONTRACT_ADDRESS,
-        BLOCKMAPS_ABI as unknown as ContractAbiParam,
-        provider,
-        NETWORK,
-        undefined,
-    ) as unknown as BlockMapsContractMethods;
-}
+/** Shared contract singleton — reuse with setSender() for write calls */
+let contractInstance: BlockMapsContractMethods | null = null;
 
-function getWriteContract(sender: Parameters<typeof getContract>[4]): BlockMapsContractMethods {
-    const provider = getProvider();
-    return getContract(
-        CONTRACT_ADDRESS,
-        BLOCKMAPS_ABI as unknown as ContractAbiParam,
-        provider,
-        NETWORK,
-        sender,
-    ) as unknown as BlockMapsContractMethods;
+function getContractInstance(): BlockMapsContractMethods {
+    if (!contractInstance) {
+        const provider = getProvider();
+        contractInstance = getContract(
+            CONTRACT_ADDRESS,
+            BLOCKMAPS_ABI as unknown as ContractAbiParam,
+            provider,
+            NETWORK,
+        ) as unknown as BlockMapsContractMethods;
+    }
+    return contractInstance;
 }
 
 /** Hook for minting a block NFT. */
 export function useMint(): UseMintReturn {
     const { address, walletAddress } = useWalletConnect();
-    const contractRef = useRef<BlockMapsContractMethods | null>(null);
     const [mintStatus, setMintStatus] = useState<MintStatus>('idle');
     const [mintError, setMintError] = useState<string | null>(null);
     const [mintTxId, setMintTxId] = useState<string | null>(null);
@@ -120,16 +112,13 @@ export function useMint(): UseMintReturn {
         setMintTxId(null);
 
         try {
-            if (!contractRef.current) {
-                contractRef.current = getWriteContract(address);
-            } else {
-                contractRef.current.setSender(address);
-            }
+            const contract = getContractInstance();
+            contract.setSender(address);
 
             const blockHash16 = hashToBlockHash16(blockHash);
 
             // Simulate first — always before sendTransaction
-            const sim = await contractRef.current.mint(
+            const sim = await contract.mint(
                 blockHeight,
                 blockHash16,
                 txCount,
@@ -186,7 +175,7 @@ export function useIsMinted(): UseIsMintedReturn {
     const checkMinted = useCallback(async (blockHeight: bigint): Promise<boolean | null> => {
         setCheckingMinted(true);
         try {
-            const contract = getReadContract();
+            const contract = getContractInstance();
             const result = await contract.isMinted(blockHeight);
             if ('error' in result) return null;
             const minted = result.decoded as boolean;
@@ -210,7 +199,7 @@ export function useGetBlockData(): UseGetBlockDataReturn {
     const fetchMintedBlockData = useCallback(async (blockHeight: bigint): Promise<MintedBlockData | null> => {
         setLoadingMintedData(true);
         try {
-            const contract = getReadContract();
+            const contract = getContractInstance();
             const result = await contract.getBlockData(blockHeight);
             if ('error' in result) return null;
 
@@ -257,7 +246,7 @@ export function useTotalMinted(): UseTotalMintedReturn {
     const fetchTotalMinted = useCallback(async (): Promise<bigint | null> => {
         setLoadingTotal(true);
         try {
-            const contract = getReadContract();
+            const contract = getContractInstance();
             const result = await contract.totalMinted();
             if ('error' in result) return null;
             const total = result.decoded as bigint | undefined;
