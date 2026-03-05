@@ -11,9 +11,10 @@ function hash16ToHex(hash16: bigint): string {
     return hex.padEnd(64, '0');
 }
 
-// Sample set of block heights to check against the connected wallet owner
-// In a full implementation this would use event indexing
+// Block heights to probe for ownership. Includes known minted blocks + popular heights.
+// In a full implementation this would use event indexing.
 const KNOWN_HEIGHTS: bigint[] = [
+    111111n,
     500000n, 630000n, 700000n, 750000n, 800000n, 840000n,
     550000n, 600000n, 650000n, 680000n, 720000n, 780000n,
 ];
@@ -37,14 +38,16 @@ export function MyBlockMapsPage(): React.ReactElement {
         setLoading(true);
         setOwnedBlocks([]);
 
+        // Normalize hex: strip 0x prefix, lowercase
+        const strip0x = (s: string): string => s.startsWith('0x') ? s.slice(2).toLowerCase() : s.toLowerCase();
+        const myKey = strip0x(ownerKey);
+
         const results: OwnedEntry[] = [];
         for (const height of KNOWN_HEIGHTS) {
             try {
                 const data = await fetchMintedBlockData(height);
                 if (data && data.hash16 !== 0n && data.owner) {
-                    const ownerNorm = data.owner.toLowerCase();
-                    const keyNorm = ownerKey.toLowerCase();
-                    if (ownerNorm === keyNorm) {
+                    if (strip0x(data.owner) === myKey) {
                         results.push({ blockHeight: height, data });
                     }
                 }

@@ -17,7 +17,9 @@ interface GalleryEntry {
     data: MintedBlockData;
 }
 
-const DEMO_HEIGHTS: bigint[] = [
+// Known minted blocks + popular heights to probe
+const PROBE_HEIGHTS: bigint[] = [
+    111111n,
     500000n,
     630000n,
     700000n,
@@ -43,7 +45,7 @@ export function GalleryPage(): React.ReactElement {
             setLoading(true);
             const results: GalleryEntry[] = [];
 
-            for (const height of DEMO_HEIGHTS) {
+            for (const height of PROBE_HEIGHTS) {
                 if (cancelled) return;
                 try {
                     const data = await fetchMintedBlockData(height);

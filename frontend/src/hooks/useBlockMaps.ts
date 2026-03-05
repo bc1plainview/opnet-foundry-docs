@@ -9,6 +9,19 @@ import type { MintedBlockData, MintStatus } from '../types/index.js';
 
 type ContractAbiParam = Parameters<typeof getContract>[1];
 
+/** Shape returned by every contract call — values live on `properties`, NOT `decoded` */
+interface CallResult {
+    properties: Record<string, unknown>;
+    error?: unknown;
+    sendTransaction: (params: {
+        signer: null;
+        mldsaSigner: null;
+        refundTo: string;
+        network: typeof NETWORK;
+        maximumAllowedSatToSpend: bigint;
+    }) => Promise<Record<string, unknown>>;
+}
+
 /** Contract methods available via ABI — typed for call sites */
 interface BlockMapsContractMethods {
     mint(
@@ -21,10 +34,10 @@ interface BlockMapsContractMethods {
         blockWeight: bigint,
         totalFees: bigint,
         blockReward: bigint,
-    ): Promise<Record<string, unknown>>;
-    isMinted(blockHeight: bigint): Promise<Record<string, unknown>>;
-    getBlockData(blockHeight: bigint): Promise<Record<string, unknown>>;
-    totalMinted(): Promise<Record<string, unknown>>;
+    ): Promise<CallResult>;
+    isMinted(blockHeight: bigint): Promise<CallResult>;
+    getBlockData(blockHeight: bigint): Promise<CallResult>;
+    totalMinted(): Promise<CallResult>;
     setSender(sender: unknown): void;
 }
 
@@ -117,16 +130,8 @@ export function useMint(): UseMintReturn {
 
             const blockHash16 = hashToBlockHash16(blockHash);
 
-            console.log('[BlockMaps] mint params:', {
-                blockHeight: typeof blockHeight, blockHash16: typeof blockHash16,
-                txCount: typeof txCount, timestamp: typeof timestamp,
-                difficulty: typeof difficulty, blockSize: typeof blockSize,
-                blockWeight: typeof blockWeight, totalFees: typeof totalFees,
-                blockReward: typeof blockReward,
-            });
-
             // Simulate first — always before sendTransaction
-            let sim: Record<string, unknown>;
+            let sim: CallResult;
             try {
                 sim = await contract.mint(
                     blockHeight,
@@ -145,26 +150,17 @@ export function useMint(): UseMintReturn {
                 return;
             }
 
-            if ('error' in sim) {
+            if (sim.error) {
                 setMintError(`Simulation failed: ${String(sim.error)}`);
                 setMintStatus('error');
                 return;
             }
 
-            console.log('[BlockMaps] simulation passed, sending tx...');
             setMintStatus('pending');
 
             // Call sendTransaction as a method on sim — do NOT detach it,
             // or `this` loses context and #provider becomes undefined
-            const simAny = sim as { sendTransaction: (params: {
-                signer: null;
-                mldsaSigner: null;
-                refundTo: string;
-                network: typeof NETWORK;
-                maximumAllowedSatToSpend: bigint;
-            }) => Promise<Record<string, unknown>> };
-
-            const receipt = await simAny.sendTransaction({
+            const receipt = await sim.sendTransaction({
                 signer: null,
                 mldsaSigner: null,
                 refundTo: walletAddress,
@@ -197,8 +193,8 @@ export function useIsMinted(): UseIsMintedReturn {
         try {
             const contract = getContractInstance();
             const result = await contract.isMinted(blockHeight);
-            if ('error' in result) return null;
-            const minted = result.decoded as boolean;
+            if (result.error) return null;
+            const minted = result.properties.minted as boolean;
             setIsMinted(minted);
             return minted;
         } catch {
@@ -221,14 +217,14 @@ export function useGetBlockData(): UseGetBlockDataReturn {
         try {
             const contract = getContractInstance();
             const result = await contract.getBlockData(blockHeight);
-            if ('error' in result) return null;
+            if (result.error) return null;
 
-            const decoded = result.decoded as {
+            const props = result.properties as {
                 hash16: bigint;
                 txCount: bigint;
                 timestamp: bigint;
                 difficulty: bigint;
-                owner: string;
+                owner: { toString(): string };
                 blockSize: bigint;
                 blockWeight: bigint;
                 totalFees: bigint;
@@ -236,15 +232,15 @@ export function useGetBlockData(): UseGetBlockDataReturn {
             };
 
             const data: MintedBlockData = {
-                hash16: decoded.hash16,
-                txCount: decoded.txCount,
-                timestamp: decoded.timestamp,
-                difficulty: decoded.difficulty,
-                owner: decoded.owner,
-                blockSize: decoded.blockSize ?? 0n,
-                blockWeight: decoded.blockWeight ?? 0n,
-                totalFees: decoded.totalFees ?? 0n,
-                blockReward: decoded.blockReward ?? 0n,
+                hash16: props.hash16,
+                txCount: props.txCount,
+                timestamp: props.timestamp,
+                difficulty: props.difficulty,
+                owner: String(props.owner),
+                blockSize: props.blockSize ?? 0n,
+                blockWeight: props.blockWeight ?? 0n,
+                totalFees: props.totalFees ?? 0n,
+                blockReward: props.blockReward ?? 0n,
             };
             setMintedBlockData(data);
             return data;
@@ -268,8 +264,8 @@ export function useTotalMinted(): UseTotalMintedReturn {
         try {
             const contract = getContractInstance();
             const result = await contract.totalMinted();
-            if ('error' in result) return null;
-            const total = result.decoded as bigint | undefined;
+            if (result.error) return null;
+            const total = result.properties.total as bigint | undefined;
             if (total === undefined || total === null) return null;
             setTotalMinted(total);
             return total;
