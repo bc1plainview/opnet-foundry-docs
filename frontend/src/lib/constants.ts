@@ -3,8 +3,8 @@ import { networks } from '@btc-vision/bitcoin';
 export const NETWORK = networks.opnetTestnet;
 export const RPC_URL = 'https://testnet.opnet.org';
 
-export const CONTRACT_ADDRESS = 'opt1sqqs68ez7hh5rv9sntu4l7ar43yhpyftkwu3xejju';
-export const CONTRACT_ADDRESS_HEX = '0xef3d4470307b797796e296759737e39bd6c3d00efb22e434bd6c3aedb070ced7';
+export const CONTRACT_ADDRESS = 'opt1sqz3m7hw7rw94qtrmex7dd3ff0xs6gkty8g54ygy9';
+export const CONTRACT_ADDRESS_HEX = '0x00a3bf5dde1b8b502c7bc9bcd6c52979a1a459643a';
 
 export const MEMPOOL_BASE = 'https://mempool.opnet.org/testnet4';
 export const OPSCAN_BASE = 'https://opscan.org';

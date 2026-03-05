@@ -220,8 +220,8 @@ async function deploy(): Promise<void> {
         challenge: challenge as unknown as ChallengeSolution,
         linkMLDSAPublicKeyToAddress: true,
         feeRate: 2,
-        priorityFee: 330n,
-        gasSatFee: 330n,
+        priorityFee: 50_000n,
+        gasSatFee: 50_000n,
     });
 
     console.log('Contract address:', result.contractAddress);

@@ -56,7 +56,7 @@ npm run build
 ## Testnet
 
 - **Network**: OPNet Testnet (Signet fork)
-- **Contract**: `opt1sqq2umuzamxgewajsnnzwgvgq7fzflgjp85fy2xl8`
+- **Contract**: `opt1sqz3m7hw7rw94qtrmex7dd3ff0xs6gkty8g54ygy9`
 - **Explorer**: [OPScan](https://opscan.org)
 - **Mempool**: [mempool.opnet.org](https://mempool.opnet.org/testnet4)
 
