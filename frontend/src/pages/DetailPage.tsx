@@ -1,18 +1,39 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, lazy, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { InteractiveGrid } from '../components/InteractiveGrid.js';
 import { TxPanel } from '../components/TxPanel.js';
 import { BlockStatsCard } from '../components/BlockStatsCard.js';
 import { ExplorerLinks } from '../components/ExplorerLinks.js';
+import { ViewToggle } from '../components/ViewToggle.js';
 import { useGetBlockData } from '../hooks/useBlockMaps.js';
 import { useBlockData } from '../hooks/useBlockData.js';
 import { useBlockTxs } from '../hooks/useBlockTxs.js';
+import { useBlockTxWeights } from '../hooks/useBlockTxWeights.js';
 import { CONTRACT_ADDRESS_HEX } from '../lib/constants.js';
 import type { EnhancedBlockData } from '../types/index.js';
+
+// Lazy-loaded 3D view — excluded from the main bundle
+const BlockScene3D = lazy(() => import('../components/BlockScene3D.js').then((m) => ({ default: m.BlockScene3D })));
 
 function hash16ToHex(hash16: bigint): string {
     const hex = hash16.toString(16).padStart(32, '0');
     return hex.padEnd(64, '0');
+}
+
+// Skeleton shown while the 3D chunk loads
+function Scene3DSkeleton(): React.ReactElement {
+    return (
+        <div
+            className="skeleton"
+            style={{
+                width: '100%',
+                aspectRatio: '16/9',
+                borderRadius: 0,
+            }}
+            aria-busy="true"
+            aria-label="Loading 3D view..."
+        />
+    );
 }
 
 export function DetailPage(): React.ReactElement {
@@ -20,12 +41,14 @@ export function DetailPage(): React.ReactElement {
     const { mintedBlockData, loadingMintedData, fetchMintedBlockData } = useGetBlockData();
     const { fetchEnhancedBlock } = useBlockData();
     const { txids, loading: loadingTxs, fetchTxids } = useBlockTxs();
+    const { txWeights, feeRateRange, fetchWeights } = useBlockTxWeights();
 
     const [error, setError] = useState<string | null>(null);
     const [selectedCell, setSelectedCell] = useState<number | null>(null);
     const [activeTxid, setActiveTxid] = useState<string | null>(null);
     const [enhancedBlock, setEnhancedBlock] = useState<EnhancedBlockData | null>(null);
     const [blockHash, setBlockHash] = useState<string | null>(null);
+    const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d');
 
     let blockHeight: bigint = 0n;
     try {
@@ -56,9 +79,11 @@ export function DetailPage(): React.ReactElement {
                 setEnhancedBlock(data);
                 setBlockHash(data.id);
                 void fetchTxids(data.id);
+                // Kick off weight fetching (used by 3D view and 2D heat map)
+                fetchWeights(data.id, data.tx_count);
             }
         });
-    }, [blockHeight, fetchEnhancedBlock, fetchTxids]);
+    }, [blockHeight, fetchEnhancedBlock, fetchTxids, fetchWeights]);
 
     const handleCellClick = useCallback((cellIndex: number): void => {
         setSelectedCell(cellIndex);
@@ -72,7 +97,6 @@ export function DetailPage(): React.ReactElement {
         if (txid) {
             setActiveTxid(txid);
         } else {
-            // No txid loaded yet — open panel with first available
             setActiveTxid(null);
         }
     }, [mintedBlockData, txids]);
@@ -151,38 +175,61 @@ export function DetailPage(): React.ReactElement {
                     </p>
                 </div>
 
-                {/* Interactive grid */}
+                {/* View section */}
                 <div style={{ marginBottom: 'var(--spacing-xl)' }}>
+                    {/* Header row with title and toggle */}
                     <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
                         <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                             District View &mdash; {txCount.toLocaleString()} transactions
                             {txsPerCell > 1 && ` (${txsPerCell} tx/parcel)`}
                         </div>
-                        {loadingTxs && (
-                            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Loading tx data...</span>
-                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            {loadingTxs && (
+                                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Loading tx data...</span>
+                            )}
+                            <ViewToggle value={viewMode} onChange={setViewMode} />
+                        </div>
                     </div>
 
-                    <div
-                        style={{
-                            borderRadius: 0,
-                            padding: '3px',
-                            background: selectedCell !== null
-                                ? 'linear-gradient(135deg, var(--accent), var(--accent-b), var(--accent-c))'
-                                : 'linear-gradient(135deg, rgba(247,147,26,0.3), rgba(255,204,0,0.3), rgba(255,107,0,0.3))',
-                            boxShadow: '0 0 40px var(--accent-20)',
-                            transition: 'background 300ms ease',
-                        }}
-                    >
-                        <InteractiveGrid
-                            blockHeight={blockHeight}
-                            hashHex={hashHex}
-                            txCount={txCount}
-                            txids={txids}
-                            selectedCell={selectedCell}
-                            onCellClick={handleCellClick}
-                        />
-                    </div>
+                    {/* 2D grid view */}
+                    {viewMode === '2d' && (
+                        <div
+                            style={{
+                                borderRadius: 0,
+                                padding: '3px',
+                                background: selectedCell !== null
+                                    ? 'linear-gradient(135deg, var(--accent), var(--accent-b), var(--accent-c))'
+                                    : 'linear-gradient(135deg, rgba(247,147,26,0.3), rgba(255,204,0,0.3), rgba(255,107,0,0.3))',
+                                boxShadow: '0 0 40px var(--accent-20)',
+                                transition: 'background 300ms ease',
+                            }}
+                        >
+                            <InteractiveGrid
+                                blockHeight={blockHeight}
+                                hashHex={hashHex}
+                                txCount={txCount}
+                                txids={txids}
+                                selectedCell={selectedCell}
+                                onCellClick={handleCellClick}
+                            />
+                        </div>
+                    )}
+
+                    {/* 3D scene view */}
+                    {viewMode === '3d' && (
+                        <Suspense fallback={<Scene3DSkeleton />}>
+                            <BlockScene3D
+                                blockHeight={blockHeight}
+                                hashHex={hashHex}
+                                txCount={txCount}
+                                txids={txids}
+                                txWeights={txWeights}
+                                feeRateRange={feeRateRange}
+                                selectedCell={selectedCell}
+                                onCellClick={handleCellClick}
+                            />
+                        </Suspense>
+                    )}
                 </div>
 
                 {/* Block metadata */}

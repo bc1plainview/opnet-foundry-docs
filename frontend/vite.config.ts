@@ -5,7 +5,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import eslint from 'vite-plugin-eslint2';
 
 export default defineConfig({
-    base: './',
+    base: '/',
     plugins: [
         nodePolyfills({
             globals: {
@@ -59,6 +59,7 @@ export default defineConfig({
                         if (id.includes('@btc-vision/wallet-sdk')) return 'btc-wallet-sdk';
                         if (id.includes('@btc-vision/logger')) return 'btc-logger';
                         if (id.includes('node_modules/opnet')) return 'opnet';
+                        if (id.includes('three') || id.includes('@react-three')) return 'three-r3f';
                         if (id.includes('bip39')) return 'bip39';
                         if (id.includes('ecpair') || id.includes('tiny-secp256k1')) return 'bitcoin-utils';
                         if (
