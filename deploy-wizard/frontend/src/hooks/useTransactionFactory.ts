@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { Address, getContract, JSONRpcProvider } from 'opnet';
-import { TransactionFactory } from '@btc-vision/transaction';
+import { getContract, JSONRpcProvider } from 'opnet';
+import { Address, TransactionFactory } from '@btc-vision/transaction';
 import type { IDeploymentParameters } from '@btc-vision/transaction';
 import type { BitcoinInterfaceAbi } from 'opnet';
 import type { NetworkName, DeployResult, CallResult } from '../lib/types';

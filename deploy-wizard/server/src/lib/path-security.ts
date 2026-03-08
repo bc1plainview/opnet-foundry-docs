@@ -6,9 +6,19 @@ export const ALLOWED_REPOS = [
   'motoswap-core',
   'motoswap-router',
   'pill-chef',
+  'pill-token',
 ] as const;
 
 export type RepoName = (typeof ALLOWED_REPOS)[number];
+
+/**
+ * Extracts the base repo name from a path that may include sub-directories.
+ * E.g., "motochef-contract/libs/moto" -> "motochef-contract"
+ */
+export function extractBaseRepo(repoPath: string): RepoName {
+  const firstSegment = repoPath.split('/')[0] ?? '';
+  return validateRepoName(firstSegment);
+}
 
 /** Whitelisted patch targets. */
 export const ALLOWED_PATCH_TARGETS = [

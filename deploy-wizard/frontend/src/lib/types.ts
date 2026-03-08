@@ -56,8 +56,8 @@ export interface StepDefinition {
     name: string;
     /** Detailed description shown in the card */
     description: string;
-    /** Which repository to build/deploy from */
-    repo: string;
+    /** Which repository to build/deploy from (required for BUILD/DEPLOY/PATCH, optional for CALL) */
+    repo?: string;
     /** WASM file to deploy (for DEPLOY steps), relative to repo build/ dir */
     wasmFile?: string;
     /**
@@ -160,6 +160,8 @@ export interface DeploymentState {
     updatedAt: string;
     /** Which network this is for */
     network: NetworkName;
+    /** Absolute path to directory containing cloned repos (e.g., /home/user/deploy) */
+    baseDir: string;
     /** Map of step ID -> completion status */
     completedSteps: Record<string, boolean>;
     /** Map of step ID -> step result */

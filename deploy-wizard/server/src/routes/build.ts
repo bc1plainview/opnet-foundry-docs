@@ -8,6 +8,7 @@ import {
 import {
   validateBaseDir,
   validateRepoName,
+  extractBaseRepo,
   resolveRepoPath,
   resolveWasmPath,
   SecurityError,
@@ -23,9 +24,11 @@ interface BuildBody {
  * POST /api/build/:repo
  * Triggers npm run build for the given repo.
  * Body: { baseDir: string }
+ * The :repo param can include sub-paths (e.g., "motochef-contract/libs/moto").
+ * Validation extracts the base repo name and confirms it's whitelisted.
  * Logs stream via WebSocket.
  */
-router.post('/:repo', (req, res) => {
+router.post('/:repo(*)', (req, res) => {
   const repoRaw = req.params['repo'] ?? '';
   const body = req.body as BuildBody;
 
@@ -37,7 +40,8 @@ router.post('/:repo', (req, res) => {
   let safeBase: string;
   try {
     safeBase = validateBaseDir(body.baseDir);
-    validateRepoName(repoRaw);
+    // Validate that the base repo name is in the whitelist
+    extractBaseRepo(repoRaw);
   } catch (err: unknown) {
     if (err instanceof SecurityError) {
       res.status(400).json({ error: err.message });

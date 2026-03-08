@@ -10,7 +10,8 @@ import { ADMIN_CONTRACTS, getContractsByEcosystem } from '../lib/admin-functions
 import { ContractStatePanel } from './ContractStatePanel';
 import { ABI_REGISTRY } from '../lib/abis';
 import { getNetworkConfig } from '../lib/networks';
-import { getContract, JSONRpcProvider, Address } from 'opnet';
+import { getContract, JSONRpcProvider } from 'opnet';
+import { Address } from '@btc-vision/transaction';
 
 type Ecosystem = 'PILL' | 'MOTO' | 'MotoSwap';
 

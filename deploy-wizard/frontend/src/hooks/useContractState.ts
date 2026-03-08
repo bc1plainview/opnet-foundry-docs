@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { getContract, JSONRpcProvider, Address } from 'opnet';
+import { getContract, JSONRpcProvider } from 'opnet';
+import { Address } from '@btc-vision/transaction';
 import type { BitcoinInterfaceAbi } from 'opnet';
 import type { NetworkName, AdminStateField } from '../lib/types';
 import { getNetworkConfig } from '../lib/networks';

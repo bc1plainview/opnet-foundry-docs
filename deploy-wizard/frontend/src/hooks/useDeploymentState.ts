@@ -12,6 +12,7 @@ function createInitialState(network: NetworkName): DeploymentState {
         startedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         network,
+        baseDir: '',
         completedSteps: {},
         stepResults: {},
         deployedAddresses: {},
@@ -35,6 +36,7 @@ export function useDeploymentState(
     markStepCompleted: (stepId: string, result: StepResult) => void;
     saveDeployedAddress: (key: keyof DeployedAddresses, address: string) => void;
     saveWalletAddress: (phase: Phase, address: string) => void;
+    setBaseDir: (dir: string) => void;
     markPhaseCompleted: (phase: Phase) => void;
     resetState: () => void;
 } {
@@ -155,6 +157,21 @@ export function useDeploymentState(
         [persistToStorage],
     );
 
+    const setBaseDir = useCallback(
+        (dir: string): void => {
+            setState((prev): DeploymentState => {
+                const next: DeploymentState = {
+                    ...prev,
+                    updatedAt: new Date().toISOString(),
+                    baseDir: dir,
+                };
+                persistToStorage(next);
+                return next;
+            });
+        },
+        [persistToStorage],
+    );
+
     const markPhaseCompleted = useCallback(
         (phase: Phase): void => {
             setState((prev): DeploymentState => {
@@ -187,6 +204,7 @@ export function useDeploymentState(
         markStepCompleted,
         saveDeployedAddress,
         saveWalletAddress,
+        setBaseDir,
         markPhaseCompleted,
         resetState,
     };

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Address } from 'opnet';
+import { Address } from '@btc-vision/transaction';
 import { NetworkSelector } from './components/NetworkSelector';
 import { WalletPanel } from './components/WalletPanel';
 import { DeploymentWizard } from './components/DeploymentWizard';
@@ -19,6 +19,7 @@ const DEFAULT_NETWORK: NetworkName = 'testnet';
 export default function App(): JSX.Element {
     const [network, setNetwork] = useState<NetworkName>(DEFAULT_NETWORK);
     const [tab, setTab] = useState<Tab>('deploy');
+    const [baseDirInput, setBaseDirInput] = useState('');
     const [patchDiffs, setPatchDiffs] = useState<Record<string, string>>({});
     const [propagationCountdowns, setPropagationCountdowns] = useState<Record<string, number>>({});
 
@@ -57,6 +58,7 @@ export default function App(): JSX.Element {
         markStepCompleted,
         saveDeployedAddress,
         saveWalletAddress,
+        setBaseDir,
     } = useDeploymentState(network, saveState);
 
     const countdownTimers = useRef<Record<string, ReturnType<typeof setInterval>>>({});
@@ -108,7 +110,10 @@ export default function App(): JSX.Element {
             }
 
             if (step.type === 'BUILD') {
-                const buildRes = await triggerBuild(step.repo, step.repo);
+                if (!deploymentState.baseDir) {
+                    throw new Error('Base directory not set. Configure it in the setup panel.');
+                }
+                const buildRes = await triggerBuild(step.repo, deploymentState.baseDir);
                 const result: BuildResult = {
                     success: buildRes.success,
                     logTail: '',
@@ -187,13 +192,10 @@ export default function App(): JSX.Element {
                             return 0n;
                         }
                     }
-                    // Address params — resolve via Address.fromString
+                    // Address params — contract pubkeys (0x hex) are passed as raw strings
+                    // to the ABI-typed method call. The opnet getContract() handles encoding.
                     if (param.typeHint.includes('ADDRESS') && val.startsWith('0x')) {
-                        try {
-                            return Address.fromString(val);
-                        } catch {
-                            return val;
-                        }
+                        return val;
                     }
                     return val;
                 });
@@ -219,11 +221,12 @@ export default function App(): JSX.Element {
                 const addrs = deploymentState.deployedAddresses as Record<string, string | undefined>;
 
                 if (step.patchTarget === 'motochef-factory') {
+                    // Role names must match PATCH_SPECS in server patch-engine.ts
                     if (addrs['deployableOP20Template']) {
-                        pubkeys['tokenTemplate'] = addrs['deployableOP20Template'];
+                        pubkeys['deployableOP20'] = addrs['deployableOP20Template'];
                     }
                     if (addrs['templateMotoChef']) {
-                        pubkeys['chefTemplate'] = addrs['templateMotoChef'];
+                        pubkeys['templateMotoChef'] = addrs['templateMotoChef'];
                     }
                 } else if (step.patchTarget === 'motoswap-factory') {
                     if (addrs['motoSwapPoolTemplate']) {
@@ -250,6 +253,7 @@ export default function App(): JSX.Element {
             deployContract,
             callContract,
             deploymentState.deployedAddresses,
+            deploymentState.baseDir,
             markStepCompleted,
             saveDeployedAddress,
         ],
@@ -437,7 +441,41 @@ export default function App(): JSX.Element {
 
             {/* Main content */}
             <main className="container" style={{ flex: 1, padding: '2rem 1.5rem' }}>
-                {tab === 'deploy' ? (
+                {tab === 'deploy' && !deploymentState.baseDir ? (
+                    <div style={{ maxWidth: '560px', margin: '2rem auto' }}>
+                        <div className="card-elevated fade-in" style={{ padding: '2rem' }}>
+                            <h2 style={{ marginBottom: '0.5rem' }}>Setup: Repos Directory</h2>
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
+                                Enter the absolute path to the directory containing (or where to clone) the
+                                contract repos: motochef-contract, motoswap-core, motoswap-router, pill-chef, pill-token.
+                            </p>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <input
+                                    type="text"
+                                    className="input"
+                                    placeholder="/home/user/opnet-deploy"
+                                    value={baseDirInput}
+                                    onChange={(e): void => setBaseDirInput(e.target.value)}
+                                    style={{ flex: 1 }}
+                                />
+                                <button
+                                    className="btn btn-primary"
+                                    disabled={!baseDirInput.startsWith('/')}
+                                    onClick={(): void => {
+                                        setBaseDir(baseDirInput.trim());
+                                    }}
+                                >
+                                    Set Directory
+                                </button>
+                            </div>
+                            {baseDirInput && !baseDirInput.startsWith('/') && (
+                                <p style={{ color: 'var(--danger)', fontSize: '0.75rem', marginTop: '0.5rem' }}>
+                                    Must be an absolute path (starts with /)
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                ) : tab === 'deploy' ? (
                     <DeploymentWizard
                         deploymentState={deploymentState}
                         network={network}

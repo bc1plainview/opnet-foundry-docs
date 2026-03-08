@@ -5,9 +5,11 @@ import { broadcastLog, broadcastError, broadcastStatus } from '../ws/logs.js';
 import {
   validateBaseDir,
   validateRepoName,
+  extractBaseRepo,
   resolveRepoPath,
   type RepoName,
   ALLOWED_REPOS,
+  SecurityError,
 } from './path-security.js';
 
 /** Git remote URLs for each supported repo. */
@@ -16,6 +18,7 @@ const REPO_URLS: Record<RepoName, string> = {
   'motoswap-core': 'https://github.com/btc-vision/motoswap-core',
   'motoswap-router': 'https://github.com/btc-vision/motoswap-router',
   'pill-chef': 'https://github.com/btc-vision/motochef-contract',
+  'pill-token': 'https://github.com/btc-vision/pill-token',
 };
 
 export interface RepoStatus {
@@ -150,20 +153,33 @@ export async function installDeps(baseDir: string, repoName: string): Promise<vo
 
 /**
  * Runs npm run build in the repo directory and records a build timestamp.
+ * Supports sub-paths like "motochef-contract/libs/moto" — validates the base
+ * repo name and resolves the full build directory within it.
  */
-export async function buildRepo(baseDir: string, repoName: string): Promise<void> {
+export async function buildRepo(baseDir: string, repoPath: string): Promise<void> {
   const safeBase = validateBaseDir(baseDir);
-  const safe = validateRepoName(repoName);
-  const repoDir = resolveRepoPath(safeBase, safe);
-  const source = `build:${safe}`;
 
-  if (!fs.existsSync(repoDir)) {
-    throw new Error(`Repo directory does not exist: ${repoDir}`);
+  // Extract and validate the base repo name (e.g., "motochef-contract" from "motochef-contract/libs/moto")
+  const baseRepo = extractBaseRepo(repoPath);
+
+  // Resolve the full path (may be a sub-directory within the repo)
+  const buildDir = path.resolve(safeBase, repoPath);
+
+  // Security: ensure resolved path stays inside baseDir
+  if (!buildDir.startsWith(safeBase + path.sep) && buildDir !== safeBase) {
+    throw new SecurityError('Build path escapes baseDir');
   }
 
-  await runStreaming('npm', ['run', 'build'], repoDir, source);
+  const source = `build:${repoPath}`;
 
-  // Record build timestamp
+  if (!fs.existsSync(buildDir)) {
+    throw new Error(`Build directory does not exist: ${buildDir}`);
+  }
+
+  await runStreaming('npm', ['run', 'build'], buildDir, source);
+
+  // Record build timestamp on the base repo dir
+  const repoDir = resolveRepoPath(safeBase, baseRepo);
   const stampPath = path.join(repoDir, '.last-build');
   fs.writeFileSync(stampPath, new Date().toISOString(), 'utf8');
 }

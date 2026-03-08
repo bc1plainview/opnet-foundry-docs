@@ -3,11 +3,10 @@
  * All ABIs use ABIDataTypes and BitcoinAbiTypes from opnet.
  */
 
-import { ABIDataTypes, OP_NET_ABI } from 'opnet';
+import { ABIDataTypes, BitcoinAbiTypes, OP_NET_ABI } from 'opnet';
 import type { BitcoinInterfaceAbi } from 'opnet';
 
-// BitcoinAbiTypes values used in ABIs
-const FUNCTION = 'Function' as const;
+const FUNCTION = BitcoinAbiTypes.Function;
 
 /**
  * AdministeredOP20 ABI — for changeAdmin() calls on MOTO and PILL tokens.

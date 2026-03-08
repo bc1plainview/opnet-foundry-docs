@@ -1,8 +1,8 @@
 /**
- * All 23 deployment steps for the MOTO/PILL/MotoSwap ecosystem.
+ * All 26 deployment steps for the MOTO/PILL/MotoSwap ecosystem.
  *
  * Phase 1 (Steps 1-6): PILL ecosystem — uses PILL wallet.
- * Phase 2 (Steps 7-23): MOTO + MotoSwap + OP20 — uses MOTO wallet.
+ * Phase 2 (Steps 7-26): MOTO + MotoSwap + OP20 — uses MOTO wallet.
  */
 
 import type { StepDefinition } from './types';
@@ -386,25 +386,59 @@ export const DEPLOYMENT_STEPS: StepDefinition[] = [
     },
 
     {
-        id: 'deploy-templates',
+        id: 'deploy-deployable-op20',
         stepNumber: 13,
         phase: 2,
         type: 'DEPLOY',
-        name: 'Deploy 3 Template Contracts',
+        name: 'Deploy DeployableOP20 Template',
         description:
-            'Deploys DeployableOP20, MotoChefDeployableOP20, and TemplateMotoChef — the three template contracts that MotoChefFactory uses to create new farms. All require owner calldata.',
+            'Deploys the DeployableOP20 template contract — used by MotoChefFactory and OP20Factory to create new tokens. Requires owner calldata.',
         repo: 'motochef-contract',
         wasmFile: 'DeployableOP20.wasm',
         ownerCalldata: true,
         savesAddressAs: 'deployableOP20Template',
-        estimatedCostSats: 240_000n,
+        estimatedCostSats: 80_000n,
         propagationWaitSeconds: 15,
         dependencies: ['motochef-initialize'],
     },
 
     {
-        id: 'patch-motochef-factory',
+        id: 'deploy-motochef-deployable-op20',
         stepNumber: 14,
+        phase: 2,
+        type: 'DEPLOY',
+        name: 'Deploy MotoChefDeployableOP20 Template',
+        description:
+            'Deploys the MotoChefDeployableOP20 template — a specialized token template used by MotoChefFactory when creating farm tokens. Requires owner calldata.',
+        repo: 'motochef-contract',
+        wasmFile: 'MotoChefDeployableOP20.wasm',
+        ownerCalldata: true,
+        savesAddressAs: 'motoChefDeployableOP20Template',
+        estimatedCostSats: 80_000n,
+        propagationWaitSeconds: 15,
+        dependencies: ['deploy-deployable-op20'],
+    },
+
+    {
+        id: 'deploy-template-motochef',
+        stepNumber: 15,
+        phase: 2,
+        type: 'DEPLOY',
+        name: 'Deploy TemplateMotoChef Template',
+        description:
+            'Deploys the TemplateMotoChef template — cloned by MotoChefFactory when creating new farms. Requires owner calldata.',
+        repo: 'motochef-contract',
+        wasmFile: 'TemplateMotoChef.wasm',
+        ownerCalldata: true,
+        savesAddressAs: 'templateMotoChef',
+        estimatedCostSats: 80_000n,
+        propagationWaitSeconds: 15,
+        dependencies: ['deploy-motochef-deployable-op20'],
+    },
+
+    {
+        id: 'patch-motochef-factory',
+        stepNumber: 16,
         phase: 2,
         type: 'PATCH',
         name: 'Patch MotoChefFactory + Rebuild',
@@ -412,12 +446,12 @@ export const DEPLOYMENT_STEPS: StepDefinition[] = [
             'Patches MotoChefFactory.ts and OP20Factory.ts to embed the deployed template contract pubkeys as hardcoded byte arrays. The diff is shown for review before rebuild.',
         repo: 'motochef-contract',
         patchTarget: 'motochef-factory',
-        dependencies: ['deploy-templates'],
+        dependencies: ['deploy-template-motochef'],
     },
 
     {
         id: 'motochef-factory-deploy',
-        stepNumber: 15,
+        stepNumber: 17,
         phase: 2,
         type: 'DEPLOY',
         name: 'Deploy MotoChefFactory',
@@ -434,7 +468,7 @@ export const DEPLOYMENT_STEPS: StepDefinition[] = [
 
     {
         id: 'motochef-factory-initialize',
-        stepNumber: 16,
+        stepNumber: 18,
         phase: 2,
         type: 'CALL',
         name: 'Initialize MotoChefFactory',
@@ -449,7 +483,7 @@ export const DEPLOYMENT_STEPS: StepDefinition[] = [
 
     {
         id: 'motoswap-core-build',
-        stepNumber: 17,
+        stepNumber: 19,
         phase: 2,
         type: 'BUILD',
         name: 'Build MotoSwap Core',
@@ -461,7 +495,7 @@ export const DEPLOYMENT_STEPS: StepDefinition[] = [
 
     {
         id: 'motoswap-pool-deploy',
-        stepNumber: 18,
+        stepNumber: 20,
         phase: 2,
         type: 'DEPLOY',
         name: 'Deploy MotoSwap Pool Template',
@@ -478,7 +512,7 @@ export const DEPLOYMENT_STEPS: StepDefinition[] = [
 
     {
         id: 'patch-motoswap-factory',
-        stepNumber: 19,
+        stepNumber: 21,
         phase: 2,
         type: 'PATCH',
         name: 'Patch MotoswapFactory + Rebuild',
@@ -490,25 +524,42 @@ export const DEPLOYMENT_STEPS: StepDefinition[] = [
     },
 
     {
-        id: 'motoswap-factory-staking-deploy',
-        stepNumber: 20,
+        id: 'motoswap-factory-deploy',
+        stepNumber: 22,
         phase: 2,
         type: 'DEPLOY',
-        name: 'Deploy MotoSwap Factory + Staking',
+        name: 'Deploy MotoSwap Factory',
         description:
-            'Deploys both the MotoswapFactory and Moto Staking Pool contracts. Both require owner calldata.',
+            'Deploys the patched MotoswapFactory contract. This factory creates new liquidity pools for token pairs. Requires owner calldata.',
         repo: 'motoswap-core',
         wasmFile: 'factory.wasm',
         ownerCalldata: true,
         savesAddressAs: 'motoSwapFactory',
-        estimatedCostSats: 240_000n,
+        estimatedCostSats: 120_000n,
         propagationWaitSeconds: 15,
         dependencies: ['patch-motoswap-factory'],
     },
 
     {
+        id: 'moto-staking-deploy',
+        stepNumber: 23,
+        phase: 2,
+        type: 'DEPLOY',
+        name: 'Deploy Moto Staking Pool',
+        description:
+            'Deploys the Moto Staking Pool contract for staking rewards. Requires owner calldata.',
+        repo: 'motoswap-core',
+        wasmFile: 'staking.wasm',
+        ownerCalldata: true,
+        savesAddressAs: 'motoStakingPool',
+        estimatedCostSats: 120_000n,
+        propagationWaitSeconds: 15,
+        dependencies: ['motoswap-factory-deploy'],
+    },
+
+    {
         id: 'patch-motoswap-router',
-        stepNumber: 21,
+        stepNumber: 24,
         phase: 2,
         type: 'PATCH',
         name: 'Patch MotoswapRouterV1 + Rebuild',
@@ -516,12 +567,12 @@ export const DEPLOYMENT_STEPS: StepDefinition[] = [
             'Patches MotoswapRouterV1.ts to embed the MotoswapFactory address as a hardcoded byte array. Shows diff for review, then rebuilds motoswap-router.',
         repo: 'motoswap-router',
         patchTarget: 'motoswap-router',
-        dependencies: ['motoswap-factory-staking-deploy'],
+        dependencies: ['moto-staking-deploy'],
     },
 
     {
         id: 'motoswap-router-deploy',
-        stepNumber: 22,
+        stepNumber: 25,
         phase: 2,
         type: 'DEPLOY',
         name: 'Deploy MotoSwap Router V1',
@@ -538,7 +589,7 @@ export const DEPLOYMENT_STEPS: StepDefinition[] = [
 
     {
         id: 'op20-factory-deploy',
-        stepNumber: 23,
+        stepNumber: 26,
         phase: 2,
         type: 'DEPLOY',
         name: 'Deploy OP20 Factory',
